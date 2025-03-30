@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { setupSSERoutes } = require('./sse');
+const { setupSSERoutes } = require('./sse-simple');
 const pacienteRoutes = require('./routes/pacienteRoutes');
 const profissionalRoutes = require('./routes/profissionalRoutes');
 const agendaRoutes = require('./routes/agendaRoutes');
