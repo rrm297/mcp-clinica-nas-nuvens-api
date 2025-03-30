@@ -1,6 +1,6 @@
 # MCP Clínica nas Nuvens API
 
-Modelo de integração com a API da Clínica nas Nuvens baseado no padrão MCP Evolution.
+Modelo de integração com a API da Clínica nas Nuvens.
 
 ## Visão Geral
 
