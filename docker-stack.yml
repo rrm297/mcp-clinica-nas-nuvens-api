@@ -15,8 +15,8 @@ services:
     environment:
       # Configurações da API da Clínica nas Nuvens
       - CLINICA_NAS_NUVENS_API_URL=${CLINICA_NAS_NUVENS_API_URL}
-      - CLINICA_NAS_NUVENS_USERNAME=${CLINICA_NAS_NUVENS_USERNAME}
-      - CLINICA_NAS_NUVENS_PASSWORD=${CLINICA_NAS_NUVENS_PASSWORD}
+      - CLINICA_NAS_NUVENS_CLIENT_ID=${CLINICA_NAS_NUVENS_CLIENT_ID}
+      - CLINICA_NAS_NUVENS_CLIENT_SECRET=${CLINICA_NAS_NUVENS_CLIENT_SECRET}
       - CLINICA_NAS_NUVENS_CID=${CLINICA_NAS_NUVENS_CID}
       
       # Configurações do servidor
@@ -24,16 +24,16 @@ services:
       - NODE_ENV=production
       - LOG_LEVEL=info
       
-      # Configurações do banco de dados PostgreSQL
+      # Configurações do banco de dados
       - DATABASE_ENABLED=true
       - DATABASE_PROVIDER=postgresql
       - DATABASE_CONNECTION_URI=${DATABASE_CONNECTION_URI}
       
-      # Configurações de webhook para n8n
-      - WEBHOOK_ENABLED=${WEBHOOK_ENABLED:-true}
+      # Configurações de webhook
+      - WEBHOOK_ENABLED=true
       - WEBHOOK_URL=${WEBHOOK_URL}
       
-      # Integração com RabbitMQ (opcional)
+      # Integração com RabbitMQ (se necessário)
       - RABBITMQ_ENABLED=${RABBITMQ_ENABLED:-false}
       - RABBITMQ_URI=${RABBITMQ_URI}
     
