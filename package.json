@@ -8,12 +8,12 @@
     "dev": "nodemon src/app.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/server-http": "github:modelcontextprotocol/servers#main",
     "axios": "^1.6.5",
     "express": "^4.18.2",
     "express-sse": "^0.5.3",
     "cors": "^2.8.5",
-    "uuid": "^9.0.1",
-    "@modelcontextprotocol/server-http": "github:modelcontextprotocol/servers#main"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
