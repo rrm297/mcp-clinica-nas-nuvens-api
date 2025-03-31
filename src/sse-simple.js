@@ -14,12 +14,40 @@ const messageCache = {
 const setupSSERoutes = (app) => {
   // Endpoint SSE principal
   app.get('/sse', (req, res) => {
+    // Headers específicos para SSE e CORS
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Inicializar conexão SSE
     sse.init(req, res);
+    
+    // Enviar um evento inicial para confirmar conexão
+    sse.send({type: 'connection', status: 'established', id: uuidv4()}, 'connection');
+    
+    // Gerenciar desconexão
+    req.on('close', () => {
+      console.log('Cliente SSE desconectado');
+    });
+  });
+  
+  // Configurar CORS para o endpoint de mensagens
+  app.options('/api/messages', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, clinicaNasNuvens-cid');
+    res.status(200).end();
   });
   
   // Endpoint para enviar mensagens ao servidor
   app.post('/api/messages', async (req, res) => {
+    // Configurar CORS para a resposta
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
     try {
+      console.log('Recebido POST em /api/messages:', JSON.stringify(req.body));
+      
       const message = req.body;
       const messageId = message.id || uuidv4();
       
@@ -42,6 +70,7 @@ const setupSSERoutes = (app) => {
           
           // Armazenar o resultado
           const response = {
+            jsonrpc: "2.0",
             id: messageId,
             result
           };
@@ -53,6 +82,7 @@ const setupSSERoutes = (app) => {
           return res.status(200).json(response);
         } catch (error) {
           const errorResponse = {
+            jsonrpc: "2.0",
             id: messageId,
             error: { code: -32000, message: error.message }
           };
@@ -88,24 +118,44 @@ const setupSSERoutes = (app) => {
               properties: {
                 id: {
                   type: 'string',
-                  description: 'ID do paciente',
-                  required: true
+                  description: 'ID do paciente'
                 }
-              }
+              },
+              required: ['id']
             }
           }
         ];
         
         const response = {
+          jsonrpc: "2.0",
           id: messageId,
           result: { tools }
         };
         messageCache.results.set(messageId, response);
         sse.send(response, 'message');
         return res.status(200).json(response);
+      } else if (message.method === 'resource/list') {
+        // Mock para resource/list
+        const response = {
+          jsonrpc: "2.0",
+          id: messageId,
+          result: []
+        };
+        sse.send(response, 'message');
+        return res.status(200).json(response);
+      } else if (message.method === 'prompt/list') {
+        // Mock para prompt/list
+        const response = {
+          jsonrpc: "2.0",
+          id: messageId,
+          result: []
+        };
+        sse.send(response, 'message');
+        return res.status(200).json(response);
       } else {
         // Método não suportado
         const errorResponse = {
+          jsonrpc: "2.0",
           id: messageId,
           error: { code: -32601, message: `Método não suportado: ${message.method}` }
         };
@@ -116,6 +166,7 @@ const setupSSERoutes = (app) => {
     } catch (error) {
       console.error('Erro ao processar mensagem:', error);
       return res.status(500).json({
+        jsonrpc: "2.0",
         id: req.body.id || uuidv4(),
         error: { code: -32000, message: error.message }
       });
