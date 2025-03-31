@@ -8,9 +8,15 @@ const atendimentoRoutes = require('./routes/atendimentoRoutes');
 const { logger } = require('./utils/logger');
 const app = express();
 
-// Middleware de diagnóstico
+// Middleware de diagnóstico detalhado
 app.use((req, res, next) => {
-  console.log(`[DIAGNÓSTICO] Requisição recebida: ${req.method} ${req.url}`);
+  console.log(`[DIAGNÓSTICO DETALHADO] 
+    Método: ${req.method}
+    URL: ${req.url}
+    Host: ${req.get('host')}
+    Original URL: ${req.originalUrl}
+    Caminho: ${req.path}
+  `);
   next();
 });
 
@@ -24,12 +30,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rota raiz
+// Rota raiz com diagnóstico detalhado
 app.get('/', (req, res) => {
+  console.log('[ROTA RAIZ] Requisição recebida');
   res.status(200).json({
     message: 'Serviço MCP Clínica nas Nuvens',
     status: 'online',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    requestDetails: {
+      method: req.method,
+      url: req.url,
+      host: req.get('host'),
+      path: req.path
+    }
   });
 });
 
@@ -70,7 +83,14 @@ app._router.stack.forEach((r) => {
 // Tratamento de rotas não encontradas
 app.use((req, res) => {
   console.log(`[DIAGNÓSTICO] Rota não encontrada: ${req.method} ${req.url}`);
-  res.status(404).json({ message: 'Rota não encontrada' });
+  res.status(404).json({ 
+    message: 'Rota não encontrada',
+    details: {
+      method: req.method,
+      url: req.url,
+      host: req.get('host')
+    }
+  });
 });
 
 // Tratamento de erros globais
