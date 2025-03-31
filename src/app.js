@@ -24,6 +24,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// Rota raiz
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Serviço MCP Clínica nas Nuvens',
+    status: 'online',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Log de diagnóstico de importação
 console.log('Importando rotas SSE');
 console.log('Função setupSSERoutes:', typeof setupSSERoutes);
