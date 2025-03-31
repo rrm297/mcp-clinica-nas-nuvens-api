@@ -1,16 +1,25 @@
 FROM node:20-alpine
+
 WORKDIR /app
-# Instalação de dependências do sistema
-RUN apk add --no-cache curl tzdata
+
+# Instalação de dependências do sistema e git
+RUN apk add --no-cache curl tzdata git
+
 # Configurar timezone
 ENV TZ=America/Sao_Paulo
-# Copiar arquivos de projeto
-COPY package*.json ./
+
+# Clonar o repositório
+RUN git clone https://github.com/rrm297/mcp-clinica-nas-nuvens-api.git /tmp/repo && \
+    cp -r /tmp/repo/* /app/
+
+# Modificar package.json para incluir dependência MCP
+RUN sed -i 's/"dependencies": {/"dependencies": {\n    "@modelcontextprotocol\/server-http": "github:modelcontextprotocol\/servers#main",/' package.json
+
 # Instalar dependências
 RUN npm install
-# Copiar resto do código
-COPY . .
+
 # Porta que será exposta
 EXPOSE 3000
+
 # Comando para iniciar a aplicação
 CMD ["npm", "start"]
