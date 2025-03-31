@@ -14,23 +14,26 @@ services:
     
     environment:
       # Configurações da API da Clínica nas Nuvens
-      - CLINICA_NAS_NUVENS_API_URL=${CLINICA_NAS_NUVENS_API_URL}
-      - CLINICA_NAS_NUVENS_CLIENT_ID=${CLINICA_NAS_NUVENS_CLIENT_ID}
-      - CLINICA_NAS_NUVENS_CLIENT_SECRET=${CLINICA_NAS_NUVENS_CLIENT_SECRET}
-      - CLINICA_NAS_NUVENS_CID=${CLINICA_NAS_NUVENS_CID}
+      - CLINICA_NAS_NUVENS_API_URL=${CLINICA_API_URL}
+      - CLINICA_NAS_NUVENS_CLIENT_ID=${CLINICA_CLIENT_ID}
+      - CLINICA_NAS_NUVENS_CLIENT_SECRET=${CLINICA_CLIENT_SECRET}
+      - CLINICA_NAS_NUVENS_CID=${CLINICA_CID}
+      
+      # Credenciais para SSE e Autenticação
+      - CLINICA_AUTHORIZATION=${CLINICA_AUTHORIZATION}
       
       # Configurações do servidor
-      - PORT=3000
-      - NODE_ENV=production
-      - LOG_LEVEL=info
+      - PORT=${SERVER_PORT:-3000}
+      - NODE_ENV=${NODE_ENV:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
       
       # Configurações do banco de dados
-      - DATABASE_ENABLED=true
-      - DATABASE_PROVIDER=postgresql
+      - DATABASE_ENABLED=${DATABASE_ENABLED:-true}
+      - DATABASE_PROVIDER=${DATABASE_PROVIDER:-postgresql}
       - DATABASE_CONNECTION_URI=${DATABASE_CONNECTION_URI}
       
       # Configurações de webhook
-      - WEBHOOK_ENABLED=true
+      - WEBHOOK_ENABLED=${WEBHOOK_ENABLED:-false}
       - WEBHOOK_URL=${WEBHOOK_URL}
       
       # Integração com RabbitMQ (se necessário)
@@ -45,7 +48,7 @@ services:
         - node.role == manager
       labels:
       - traefik.enable=1
-      - traefik.http.routers.mcp-clinica.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.mcp-clinica.rule=Host(`clinica.consultoriodeouro.com.br`)
       - traefik.http.routers.mcp-clinica.entrypoints=websecure
       - traefik.http.routers.mcp-clinica.priority=1
       - traefik.http.routers.mcp-clinica.tls.certresolver=letsencryptresolver
