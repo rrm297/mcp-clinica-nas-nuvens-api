@@ -12,8 +12,22 @@ const messageCache = {
 
 // Configurar rotas SSE para Express
 const setupSSERoutes = (app) => {
+  console.log('Configurando rotas SSE');
+
   // Endpoint SSE principal
   app.get('/sse', (req, res) => {
+    console.log('Tentativa de conexão SSE', {
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Adicionar cabeçalhos de CORS explícitos
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
     sse.init(req, res);
   });
   
@@ -22,6 +36,12 @@ const setupSSERoutes = (app) => {
     try {
       const message = req.body;
       const messageId = message.id || uuidv4();
+      
+      console.log('Mensagem recebida', {
+        message,
+        messageId,
+        timestamp: new Date().toISOString()
+      });
       
       // Processar a mensagem com base no método
       if (message.method === 'tool/call') {
@@ -123,6 +143,14 @@ const setupSSERoutes = (app) => {
         error: { code: -32000, message: error.message }
       });
     }
+  });
+
+  // Adicionar rota OPTIONS para pré-flight CORS
+  app.options('/sse', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(204).end();
   });
 };
 
