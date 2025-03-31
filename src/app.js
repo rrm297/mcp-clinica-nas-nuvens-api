@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { setupSSERoutes } = require('./sse-simple');
+const { createServer } = require('@modelcontextprotocol/server-http');
 
 const app = express();
 
@@ -19,6 +20,20 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
+
+// Configurar servidor MCP
+const mcpServer = createServer({
+  // Aqui vão as configurações do MCP
+  // Por exemplo:
+  handleSession: async (sessionId) => {
+    console.log(`Nova sessão MCP iniciada: ${sessionId}`);
+    // Lógica de inicialização de sessão
+    return true;
+  }
+});
+
+// Integrar o handler do MCP com o Express
+app.use('/mcp', mcpServer.handler);
 
 // Health check
 app.get('/health', (req, res) => {
