@@ -6,7 +6,6 @@ const profissionalRoutes = require('./routes/profissionalRoutes');
 const agendaRoutes = require('./routes/agendaRoutes');
 const atendimentoRoutes = require('./routes/atendimentoRoutes');
 const { logger } = require('./utils/logger');
-
 const app = express();
 
 // Middleware
@@ -19,13 +18,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Configurar rotas SSE primeiro
+setupSSERoutes(app);
+
 // Health check
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
-
-// Configurar rotas SSE
-setupSSERoutes(app);
 
 // Rotas da API
 app.use('/api/pacientes', pacienteRoutes);
@@ -33,7 +32,7 @@ app.use('/api/profissionais', profissionalRoutes);
 app.use('/api/agenda', agendaRoutes);
 app.use('/api/atendimentos', atendimentoRoutes);
 
-// Tratamento de erros 404
+// Tratamento de rotas não encontradas
 app.use((req, res) => {
   res.status(404).json({ message: 'Rota não encontrada' });
 });
