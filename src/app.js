@@ -4,8 +4,14 @@ const { setupSSERoutes } = require('./sse-simple');
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Configurar CORS
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'clinicaNasNuvens-cid']
+}));
+
+// Middleware para parsing JSON
 app.use(express.json());
 
 // Logging de requisições
