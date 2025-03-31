@@ -8,19 +8,11 @@ RUN apk add --no-cache curl tzdata
 # Configurar timezone
 ENV TZ=America/Sao_Paulo
 
-# Copiar arquivos de dependências
-COPY package*.json ./
-
-# Instalar dependências
-RUN npm ci --only=production
-
-# Copiar código-fonte
+# Copiar arquivos de projeto
 COPY . .
 
-# Criar arquivo de health check
-RUN echo '#!/bin/sh\n\
-curl -f http://localhost:${PORT:-3000}/health || exit 1' > /app/health-check.sh && \
-chmod +x /app/health-check.sh
+# Instalar dependências
+RUN npm install
 
 # Porta que será exposta
 EXPOSE 3000
