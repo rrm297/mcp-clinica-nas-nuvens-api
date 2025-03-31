@@ -11,15 +11,15 @@ ENV TZ=America/Sao_Paulo
 RUN git clone https://github.com/rrm297/mcp-clinica-nas-nuvens-api.git /tmp/repo && \
     cp -r /tmp/repo/* /app/
 
-# Modificar package.json para incluir dependência MCP
-RUN sed -i 's/"dependencies": {/"dependencies": {\n    "@modelcontextprotocol\/server-http": "github:modelcontextprotocol\/servers#main",/' package.json
+# Clonar diretamente o repositório MCP para o node_modules
+RUN mkdir -p /app/node_modules/@modelcontextprotocol && \
+    git clone https://github.com/modelcontextprotocol/servers.git /app/node_modules/@modelcontextprotocol/server-http
 
-# Instalar dependências com logs detalhados para depuração
-RUN npm install --verbose
-RUN npm list | grep modelcontextprotocol || echo "Pacote não instalado!"
+# Instalar outras dependências do projeto
+RUN npm install --ignore-scripts
 
-# Corrigir potencial problema de módulo não encontrado  
-RUN npm install github:modelcontextprotocol/servers#main --save
+# Verificar a estrutura de diretórios para debug
+RUN ls -la /app/node_modules/@modelcontextprotocol/server-http
 
 # Porta que será exposta
 EXPOSE 3000
