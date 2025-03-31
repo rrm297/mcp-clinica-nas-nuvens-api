@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "API de integração com Clínica nas Nuvens usando MCP",
   "main": "src/app.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
