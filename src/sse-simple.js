@@ -1,40 +1,32 @@
-const SSE = require('express-sse');
-const { v4: uuidv4 } = require('uuid');
-
-// Instância SSE global
-const sse = new SSE();
-
-// Cache de mensagens
-const messageCache = {
-  pending: new Map(),
-  results: new Map()
-};
-
-// Configurar rotas SSE para Express
 const setupSSERoutes = (app) => {
   console.log('Configurando rotas SSE');
 
-  // Endpoint SSE principal
+  // Rota SSE com tratamento explícito
   app.get('/sse', (req, res) => {
-    console.log('Tentativa de conexão SSE', {
-      method: req.method,
-      url: req.url,
+    console.log('Conexão SSE recebida', {
       headers: req.headers,
-      timestamp: new Date().toISOString()
+      method: req.method
     });
-    
-    // Adicionar cabeçalhos de CORS explícitos
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    
-    sse.init(req, res);
-  });
-  
-  // Resto do código permanece igual ao anteriormente compartilhado
-};
 
-module.exports = {
-  setupSSERoutes,
-  sse
+    // Cabeçalhos CORS explícitos
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-open');
+
+    // Manter conexão aberta
+    req.on('close', () => {
+      console.log('Cliente SSE desconectado');
+    });
+
+    // Inicialização SSE
+    try {
+      sse.init(req, res);
+    } catch (error) {
+      console.error('Erro na inicialização SSE:', error);
+      res.status(500).json({ error: 'Falha na inicialização SSE' });
+    }
+  });
 };
